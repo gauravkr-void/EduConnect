@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 from teacher.models import StudentClassMembership
+from .forms import StudentProfileUpdateForm
 
 
 @login_required
@@ -25,6 +26,24 @@ def student_dashboard(request):
         "today_schedule": today_schedule,
     }
     return render(request, "student/student_dashboard.html", context)
+
+
+@login_required
+def student_profile_update(request):
+    if request.user.role != "student":
+        messages.error(request, "You are not allowed to access this page.")
+        return redirect("login")
+
+    if request.method == "POST":
+        form = StudentProfileUpdateForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully.")
+            return redirect("student_dashboard")
+    else:
+        form = StudentProfileUpdateForm(instance=request.user)
+
+    return render(request, "student/student_profile_update.html", {"form": form})
 
 
 @login_required
