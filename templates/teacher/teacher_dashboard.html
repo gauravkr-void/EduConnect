@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<h2>Teacher Dashboard</h2>
+
+<div>
+    {% if request.user.profile_picture %}
+        <img src="{{ request.user.profile_picture.url }}" alt="Profile" width="80">
+    {% endif %}
+    <p>Welcome, {{ request.user.full_name }}</p>
+    <p>Notifications | Settings</p>
+</div>
+
+<hr>
+
+<h3>Quick Actions</h3>
+<ul>
+    <li><a href="#">Generate QR</a></li>
+    <li><a href="{% url 'teacher_class' %}">Your Class</a></li>
+    <li><a href="#">Queries</a></li>
+    <li><a href="#">Messaging</a></li>
+    <li><a href="#">Announcements</a></li>
+</ul>
+
+<hr>
+
+<h3>Academic Calendar</h3>
+{% if today_classes %}
+    <ul>
+        {% for classroom in today_classes %}
+            <li>{{ classroom.name }} {% if classroom.section %}- {{ classroom.section }}{% endif %} {% if classroom.subject_name %}({{ classroom.subject_name }}){% endif %}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No classes assigned yet.</p>
+{% endif %}
+{% endblock %}

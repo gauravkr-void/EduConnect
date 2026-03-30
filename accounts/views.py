@@ -61,7 +61,7 @@ def register_view(request):
         if form.is_valid():
             form.save()
             messages.success(request, f"{selected_role.title()} account created successfully. Please log in.")
-            return redirect(f"/login/?role={selected_role}")
+            return redirect(f"{request.path.replace('register', 'login')}?role={selected_role}")
     else:
         form = form_class()
 
@@ -70,7 +70,6 @@ def register_view(request):
         "selected_role": selected_role,
     }
     return render(request, "accounts/register.html", context)
-
 
 
 @login_required
@@ -86,7 +85,7 @@ def teacher_dashboard(request):
     if request.user.role != "teacher":
         messages.error(request, "You are not allowed to access the teacher dashboard.")
         return redirect("login")
-    return render(request, "accounts/teacher_dashboard.html")
+    return render(request, "teacher/teacher_dashboard.html")
 
 
 def logout_view(request):

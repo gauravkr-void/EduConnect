@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Your Class{% endblock %}
+
+{% block content %}
+<h2>Your Classes</h2>
+
+{% if teacher_classes %}
+    {% for classroom in teacher_classes %}
+        <div style="margin-bottom: 30px;">
+            <h3>
+                {{ classroom.name }}
+                {% if classroom.section %}- {{ classroom.section }}{% endif %}
+            </h3>
+
+            {% if classroom.subject_name %}
+                <p>Subject: {{ classroom.subject_name }}</p>
+            {% endif %}
+
+            {% if classroom.student_memberships.all %}
+                <div>
+                    {% for membership in classroom.student_memberships.all %}
+                        <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+                            {% if membership.student.profile_picture %}
+                                <img src="{{ membership.student.profile_picture.url }}" alt="Student Photo" width="70">
+                            {% else %}
+                                <p>No Photo</p>
+                            {% endif %}
+                            <p>Name: {{ membership.student.full_name }}</p>
+                            <p>Roll Number: {{ membership.student.roll_number }}</p>
+                            <p>Email: {{ membership.student.email }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No students assigned to this class yet.</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No classes assigned to you yet.</p>
+{% endif %}
+
+<p><a href="{% url 'teacher_dashboard' %}">Back to Dashboard</a></p>
+{% endblock %}
