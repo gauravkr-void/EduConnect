@@ -5,12 +5,19 @@
 {% block content %}
 <h2>Teacher Dashboard</h2>
 
-<div>
-    {% if request.user.profile_picture %}
-        <img src="{{ request.user.profile_picture.url }}" alt="Profile" width="80">
-    {% endif %}
-    <p>Welcome, {{ request.user.full_name }}</p>
-    <p>Notifications | Settings</p>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        {% if request.user.profile_picture %}
+            <img src="{{ request.user.profile_picture.url }}" alt="Profile" width="80" style="border-radius: 50%;">
+        {% endif %}
+        <p>Welcome, {{ request.user.full_name }}</p>
+    </div>
+
+    <div>
+        <span style="margin-right: 20px;">Notifications</span>
+        <a href="{% url 'teacher_profile_update' %}" style="margin-right: 15px;">Update Profile</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
 </div>
 
 <hr>
@@ -30,7 +37,11 @@
 {% if today_classes %}
     <ul>
         {% for classroom in today_classes %}
-            <li>{{ classroom.name }} {% if classroom.section %}- {{ classroom.section }}{% endif %} {% if classroom.subject_name %}({{ classroom.subject_name }}){% endif %}</li>
+            <li>
+                {{ classroom.name }}
+                {% if classroom.section %}- {{ classroom.section }}{% endif %}
+                {% if classroom.subject_name %}({{ classroom.subject_name }}){% endif %}
+            </li>
         {% endfor %}
     </ul>
 {% else %}

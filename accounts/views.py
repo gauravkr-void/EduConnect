@@ -1,6 +1,5 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 from .forms import LoginForm, StudentRegistrationForm, TeacherRegistrationForm
@@ -61,7 +60,7 @@ def register_view(request):
         if form.is_valid():
             form.save()
             messages.success(request, f"{selected_role.title()} account created successfully. Please log in.")
-            return redirect(f"{request.path.replace('register', 'login')}?role={selected_role}")
+            return redirect(f"/login/?role={selected_role}")
     else:
         form = form_class()
 
@@ -70,22 +69,6 @@ def register_view(request):
         "selected_role": selected_role,
     }
     return render(request, "accounts/register.html", context)
-
-
-@login_required
-def student_dashboard(request):
-    if request.user.role != "student":
-        messages.error(request, "You are not allowed to access the student dashboard.")
-        return redirect("login")
-    return render(request, "accounts/student_dashboard.html")
-
-
-@login_required
-def teacher_dashboard(request):
-    if request.user.role != "teacher":
-        messages.error(request, "You are not allowed to access the teacher dashboard.")
-        return redirect("login")
-    return render(request, "teacher/teacher_dashboard.html")
 
 
 def logout_view(request):

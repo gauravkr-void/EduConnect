@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<h2>Student Dashboard</h2>
+
+<div>
+    {% if request.user.profile_picture %}
+        <img src="{{ request.user.profile_picture.url }}" alt="Profile" width="80">
+    {% endif %}
+    <p>Welcome, {{ request.user.full_name }}</p>
+    <p>Notifications | Settings</p>
+</div>
+
+<hr>
+
+<h3>Quick Actions</h3>
+<ul>
+    <li><a href="{% url 'student_qr_attendance' %}">QR Attendance</a></li>
+    <li><a href="{% url 'student_performance' %}">Performance</a></li>
+    <li><a href="{% url 'student_queries' %}">Ask Question</a></li>
+    <li><a href="{% url 'student_messages' %}">Messaging</a></li>
+    <li><a href="{% url 'student_attendance' %}">Attendance</a></li>
+    <li><a href="{% url 'student_announcements' %}">Announcements</a></li>
+</ul>
+
+<hr>
+
+<h3>Your Courses</h3>
+{% if enrolled_courses %}
+    {% for course in enrolled_courses %}
+        <div style="border: 1px solid #ccc; padding: 12px; margin-bottom: 12px;">
+            <p><strong>Subject Code:</strong> {{ course.subject_name|default:"SUBJECT" }}</p>
+            <p><strong>Subject Name:</strong> {{ course.name }}</p>
+            <p><strong>Teacher Name:</strong> {{ course.teacher.full_name }}</p>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>You are not enrolled in any courses yet.</p>
+{% endif %}
+
+<hr>
+
+<h3>Academic Calendar</h3>
+{% if today_schedule %}
+    <ul>
+        {% for item in today_schedule %}
+            <li>
+                {{ item.name }}
+                {% if item.section %}- {{ item.section }}{% endif %}
+                {% if item.subject_name %}({{ item.subject_name }}){% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No classes scheduled for today.</p>
+{% endif %}
+{% endblock %}
