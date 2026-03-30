@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Login | EduConnect{% endblock %}
+
+{% block content %}
+<h1>EduConnect</h1>
+
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'login' %}?role=student"
+       style="margin-right: 20px; {% if selected_role == 'student' %}font-weight: bold;{% endif %}">
+        Student
+    </a>
+
+    <a href="{% url 'login' %}?role=teacher"
+       style="{% if selected_role == 'teacher' %}font-weight: bold;{% endif %}">
+        Teacher
+    </a>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.role }}
+
+    {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+            <p style="color: red;">{{ error }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <p>
+        <label for="{{ form.email.id_for_label }}">Email:</label>
+        {{ form.email }}
+        {% if form.email.errors %}
+            <span style="color: red;">{{ form.email.errors|join:", " }}</span>
+        {% endif %}
+    </p>
+
+    <p>
+        <label for="{{ form.password.id_for_label }}">Password:</label>
+        {{ form.password }}
+        {% if form.password.errors %}
+            <span style="color: red;">{{ form.password.errors|join:", " }}</span>
+        {% endif %}
+    </p>
+
+    <p>
+        <label for="{{ form.remember_me.id_for_label }}">Remember me:</label>
+        {{ form.remember_me }}
+    </p>
+
+    <button type="submit">Sign In</button>
+</form>
+
+<p>
+    <a href="{% url 'register' %}?role={{ selected_role }}">Sign up </a>
+</p>
+{% endblock %}

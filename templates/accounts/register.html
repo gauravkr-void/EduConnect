@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Register | EduConnect{% endblock %}
+
+{% block content %}
+<h1>EduConnect Register</h1>
+
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'register' %}?role=student"
+       style="margin-right: 20px; {% if selected_role == 'student' %}font-weight: bold;{% endif %}">
+        Student
+    </a>
+
+    <a href="{% url 'register' %}?role=teacher"
+       style="{% if selected_role == 'teacher' %}font-weight: bold;{% endif %}">
+        Teacher
+    </a>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="role" value="{{ selected_role }}">
+
+    {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+            <p style="color: red;">{{ error }}</p>
+        {% endfor %}
+    {% endif %}
+
+    {{ form.as_p }}
+
+    <button type="submit">
+        Register as {{ selected_role|title }}
+    </button>
+</form>
+
+<p>
+    Already have an account?
+    <a href="{% url 'login' %}?role={{ selected_role }}">Sign in</a>
+</p>
+{% endblock %}
