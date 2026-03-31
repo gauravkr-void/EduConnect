@@ -1,7 +1,54 @@
 {% extends "base.html" %}
-{% block title %}QR Attendance{% endblock %}
+
+{% block title %}Scan QR Attendance{% endblock %}
+
 {% block content %}
-<h2>QR Attendance</h2>
-<p>This page will be connected to the QR scanner later.</p>
-<p><a href="{% url 'student_dashboard' %}">Back to Dashboard</a></p>
+<h2>Scan QR Code</h2>
+<p>Apne teacher ke screen par dikh rahe QR code ko scan karein.</p>
+
+<hr>
+
+<div id="reader" style="width: 100%; max-width: 400px; margin: auto; border: 1px solid #ccc;"></div>
+
+<div id="result-message" style="margin-top: 20px; text-align: center; font-weight: bold;"></div>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<script>
+    function onScanSuccess(decodedText, decodedResult) {
+        html5QrcodeScanner.clear();
+        document.getElementById('result-message').innerText = "Processing Attendance... Please wait.";
+
+        fetch("{% url 'student_qr_attendance' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: "qr_data=" + encodeURIComponent(decodedText)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('result-message').innerHTML = 
+                    "<span style='color: green;'>" + data.message + "</span><br><br><a href='{% url 'student_dashboard' %}'>Go to Dashboard</a>";
+            } else {
+                document.getElementById('result-message').innerHTML = 
+                    "<span style='color: red;'>" + data.message + "</span><br><br><button onclick='location.reload()'>Try Again</button>";
+            }
+        })
+        .catch(error => {
+            document.getElementById('result-message').innerHTML = "<span style='color: red;'>Error: Server connect nahi ho raha.</span>";
+        });
+    }
+
+    // Capital 'H' ke saath start karo
+    var html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader", { fps: 10, qrbox: 250 }
+    );
+    html5QrcodeScanner.render(onScanSuccess);
+</script>
+
 {% endblock %}

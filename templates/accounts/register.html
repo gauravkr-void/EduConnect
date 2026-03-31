@@ -1,41 +1,130 @@
 {% extends "base.html" %}
 
 {% block title %}Register | EduConnect{% endblock %}
+{% block body_class %}auth-body{% endblock %}
 
 {% block content %}
-<h1>EduConnect Register</h1>
+<div class="landing-shell">
+    <div class="auth-orb auth-orb-left"></div>
+    <div class="auth-orb auth-orb-right"></div>
 
-<div style="margin-bottom: 20px;">
-    <a href="{% url 'register' %}?role=student"
-       style="margin-right: 20px; {% if selected_role == 'student' %}font-weight: bold;{% endif %}">
-        Student
-    </a>
+    <header class="landing-nav">
+        <a href="{% url 'login' %}" class="landing-logo">
+            <span class="brand-mark brand-mark-small" aria-hidden="true">
+                <svg viewBox="0 0 64 64" class="brand-mark-svg" role="img" aria-hidden="true">
+                    <path d="M12 24.5L32 15l20 9.5-20 9.5-20-9.5Z" fill="none" stroke="#5AA5DC" stroke-width="3.2" stroke-linejoin="round"/>
+                    <path d="M19 28.5v9.5c0 2.5 6 6 13 6s13-3.5 13-6v-9.5" fill="none" stroke="#5AA5DC" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M52 26v10" fill="none" stroke="#5AA5DC" stroke-width="3.2" stroke-linecap="round"/>
+                    <circle cx="52" cy="38.5" r="2.4" fill="#5AA5DC"/>
+                </svg>
+            </span>
+            <span>EduConnect</span>
+        </a>
+        <nav class="landing-links">
+            <a href="{% url 'login' %}">Home</a>
+            <a href="{% url 'login' %}#about">About</a>
+            <a href="{% url 'login' %}#contact">Contact</a>
+        </nav>
+    </header>
 
-    <a href="{% url 'register' %}?role=teacher"
-       style="{% if selected_role == 'teacher' %}font-weight: bold;{% endif %}">
-        Teacher
-    </a>
+    <section class="landing-hero register-hero">
+        <div class="hero-copy">
+            <span class="hero-kicker">Create Your EduConnect Account</span>
+            <h1>Start your academic journey with confidence</h1>
+            <p>
+                Sign up as a {{ selected_role }} to access attendance tools, academic updates,
+                mentor communication, study material, and a smoother digital classroom experience.
+            </p>
+            <div class="hero-actions">
+                <a href="{% url 'login' %}?role={{ selected_role }}" class="primary-button hero-button">Sign In Instead</a>
+            </div>
+        </div>
+
+        <aside class="auth-card auth-card-hero register-card">
+            <div class="auth-brand auth-brand-compact">
+                <h2>Register as {{ selected_role|title }}</h2>
+                <p>Fill in your details to join EduConnect.</p>
+            </div>
+
+            <div class="role-toggle">
+                <a href="{% url 'register' %}?role=student" class="role-pill {% if selected_role == 'student' %}is-active{% endif %}">Student</a>
+                <a href="{% url 'register' %}?role=teacher" class="role-pill {% if selected_role == 'teacher' %}is-active{% endif %}">Teacher</a>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="auth-form auth-form-grid">
+                {% csrf_token %}
+                <input type="hidden" name="role" value="{{ selected_role }}">
+
+                {% if form.non_field_errors %}
+                    <div class="form-alert form-group-full">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% for field in form %}
+                    {% if field.name == 'terms_accepted' %}
+                        <label class="checkbox-card">
+                            {{ field }}
+                            <span>{{ field.label }}</span>
+                        </label>
+                        {% if field.errors %}
+                            <small class="field-error form-group-full">{{ field.errors|join:", " }}</small>
+                        {% endif %}
+                    {% elif field.name == 'profile_picture' %}
+                        <div class="form-group form-group-full">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            <div class="file-upload-wrap">
+                                <div class="file-upload-ui">
+                                    {{ field }}
+                                    <label for="{{ field.id_for_label }}" class="file-upload-button">
+                                        <span class="file-upload-icon" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" class="file-upload-icon-svg">
+                                                <path d="M7 8.5A2.5 2.5 0 1 0 7 3.5a2.5 2.5 0 0 0 0 5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M4 19.5h16a1.5 1.5 0 0 0 1.5-1.5V7A1.5 1.5 0 0 0 20 5.5H4A1.5 1.5 0 0 0 2.5 7v11A1.5 1.5 0 0 0 4 19.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                                <path d="m6 16 3.4-3.4a1.2 1.2 0 0 1 1.7 0l1.9 1.9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="m12.5 14 1.4-1.4a1.2 1.2 0 0 1 1.7 0L18 15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                        <span>Upload Photo</span>
+                                    </label>
+                                    <span class="file-upload-text" data-file-text>No file chosen</span>
+                                </div>
+                            </div>
+                            {% if field.errors %}
+                                <small class="field-error">{{ field.errors|join:", " }}</small>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="form-group {% if field.name == 'full_name' or field.name == 'email' %}form-group-full{% endif %}">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            <div class="input-wrap register-input-wrap">
+                                {{ field }}
+                            </div>
+                            {% if field.errors %}
+                                <small class="field-error">{{ field.errors|join:", " }}</small>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                <button type="submit" class="primary-button form-group-full">Register as {{ selected_role|title }}</button>
+                <a href="{% url 'login' %}?role={{ selected_role }}" class="secondary-button secondary-button-full form-group-full">Already have an account? Sign In</a>
+            </form>
+        </aside>
+    </section>
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("id_profile_picture");
+    const text = document.querySelector("[data-file-text]");
 
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="hidden" name="role" value="{{ selected_role }}">
-
-    {% if form.non_field_errors %}
-        {% for error in form.non_field_errors %}
-            <p style="color: red;">{{ error }}</p>
-        {% endfor %}
-    {% endif %}
-
-    {{ form.as_p }}
-
-    <button type="submit">
-        Register as {{ selected_role|title }}
-    </button>
-</form>
-
-<p>
-    Already have an account?
-    <a href="{% url 'login' %}?role={{ selected_role }}">Sign in</a>
-</p>
+    if (input && text) {
+        input.addEventListener("change", function () {
+            text.textContent = input.files && input.files.length ? input.files[0].name : "No file chosen";
+        });
+    }
+});
+</script>
 {% endblock %}

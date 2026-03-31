@@ -1,0 +1,12 @@
+<h2>Attendance for {{ subject.name }}</h2>
+<div id="qr-container">
+    <img src="{{ qr_url }}" alt="Attendance QR" style="width: 300px;">
+</div>
+<p>Scan this QR to mark your attendance!</p>
+
+<script>
+    // Page ko har 2 minute mein refresh karne ke liye (Dynamic QR)
+    setTimeout(function(){
+       window.location.reload(1);
+    }, 60000); 
+</script>

@@ -1,57 +1,170 @@
 {% extends "base.html" %}
 
 {% block title %}Login | EduConnect{% endblock %}
+{% block body_class %}auth-body{% endblock %}
 
 {% block content %}
-<h1>EduConnect</h1>
+<div class="landing-shell">
+    <div class="auth-orb auth-orb-left"></div>
+    <div class="auth-orb auth-orb-right"></div>
 
-<div style="margin-bottom: 20px;">
-    <a href="{% url 'login' %}?role=student"
-       style="margin-right: 20px; {% if selected_role == 'student' %}font-weight: bold;{% endif %}">
-        Student
-    </a>
+    <header class="landing-nav">
+        <a href="{% url 'login' %}" class="landing-logo">
+            <span class="brand-mark brand-mark-small" aria-hidden="true">
+                <svg viewBox="0 0 64 64" class="brand-mark-svg" role="img" aria-hidden="true">
+                    <path d="M12 24.5L32 15l20 9.5-20 9.5-20-9.5Z" fill="none" stroke="#5AA5DC" stroke-width="3.2" stroke-linejoin="round"/>
+                    <path d="M19 28.5v9.5c0 2.5 6 6 13 6s13-3.5 13-6v-9.5" fill="none" stroke="#5AA5DC" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M52 26v10" fill="none" stroke="#5AA5DC" stroke-width="3.2" stroke-linecap="round"/>
+                    <circle cx="52" cy="38.5" r="2.4" fill="#5AA5DC"/>
+                </svg>
+            </span>
+            <span>EduConnect</span>
+        </a>
+        <nav class="landing-links">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
 
-    <a href="{% url 'login' %}?role=teacher"
-       style="{% if selected_role == 'teacher' %}font-weight: bold;{% endif %}">
-        Teacher
-    </a>
+    <section class="landing-hero" id="home">
+        <div class="hero-copy">
+            <span class="hero-kicker">Academic Collaboration Platform</span>
+            <h1>Connecting Students and Teachers Seamlessly</h1>
+            <p>
+                EduConnect brings attendance, schedules, communication, and campus coordination
+                into one clean digital experience for modern classrooms.
+            </p>
+            <div class="hero-actions">
+                <a href="#about" class="primary-button hero-button">About Us</a>
+            </div>
+        </div>
+
+        <aside class="auth-card auth-card-hero">
+            <div class="auth-brand auth-brand-compact">
+                <h2>Welcome Back</h2>
+                <p>Log in to continue your academic journey.</p>
+            </div>
+
+            <div class="role-toggle">
+                <a href="{% url 'login' %}?role=student" class="role-pill {% if selected_role == 'student' %}is-active{% endif %}">Student</a>
+                <a href="{% url 'login' %}?role=teacher" class="role-pill {% if selected_role == 'teacher' %}is-active{% endif %}">Teacher</a>
+            </div>
+
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                {{ form.role }}
+
+                {% if form.non_field_errors %}
+                    <div class="form-alert">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}">Email / Username</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">@</span>
+                        {{ form.email }}
+                    </div>
+                    {% if form.email.errors %}
+                        <small class="field-error">{{ form.email.errors|join:", " }}</small>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.password.id_for_label }}">Password</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">*</span>
+                        {{ form.password }}
+                    </div>
+                    {% if form.password.errors %}
+                        <small class="field-error">{{ form.password.errors|join:", " }}</small>
+                    {% endif %}
+                </div>
+
+                <div class="auth-row">
+                    <label class="checkbox-inline" for="{{ form.remember_me.id_for_label }}">
+                        {{ form.remember_me }}
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="auth-link">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="primary-button">Login</button>
+                <a href="{% url 'register' %}?role={{ selected_role }}" class="secondary-button secondary-button-full">Sign Up</a>
+            </form>
+        </aside>
+    </section>
+
+    <section class="landing-about" id="about">
+        <div class="about-copy">
+            <span class="hero-kicker">About EduConnect</span>
+            <h2>Built for organized, connected academic life</h2>
+            <p>
+                From attendance and announcements to student support, EduConnect helps institutions
+                create a smoother and more connected learning environment.
+            </p>
+            <p>
+                EduConnect is designed for colleges, schools, and training centers that want a more
+                connected digital campus. It brings academic coordination, attendance workflows,
+                communication, and scheduling into one simple space for everyone.
+            </p>
+            <p>
+                The goal is to reduce confusion, save time for faculty, and give students a cleaner
+                way to stay informed, ask questions, and keep up with their learning journey.
+            </p>
+        </div>
+        <div class="about-grid">
+            <article class="feature-highlight">
+                <div class="feature-badge theme-blue">QR</div>
+                <h3>QR Attendance</h3>
+                <p>Fast, reliable attendance marking for classrooms, labs, and daily reporting.</p>
+            </article>
+            <article class="feature-highlight">
+                <div class="feature-badge theme-gold">AC</div>
+                <h3>Academic Calendar</h3>
+                <p>Track lectures, lab sessions, campus events, and upcoming academic schedules.</p>
+            </article>
+            <article class="feature-highlight">
+                <div class="feature-badge theme-violet">MM</div>
+                <h3>Mentor Messaging</h3>
+                <p>Support focused communication between teachers and students without extra clutter.</p>
+            </article>
+            <article class="feature-highlight">
+                <div class="feature-badge theme-sky">AN</div>
+                <h3>Announcements</h3>
+                <p>Share notices, reminders, and important class updates quickly across the institution.</p>
+            </article>
+            <article class="feature-highlight">
+                <div class="feature-badge theme-teal">SM</div>
+                <h3>Study Material</h3>
+                <p>Give students quick access to notes, assignments, and important learning resources.</p>
+            </article>
+            <article class="feature-highlight">
+                <div class="feature-badge theme-coral">TR</div>
+                <h3>Transparency</h3>
+                <p>Provide clear visibility into each individual's academic performance, progress, and engagement.</p>
+            </article>
+        </div>
+    </section>
+
+    <footer class="landing-footer" id="contact">
+        <div>
+            <strong>EduConnect Institution Desk</strong>
+            <p>Email: support@educonnect.edu</p>
+            <p>Phone: +91 98765 43210</p>
+        </div>
+        <div>
+            <p>&copy; 2026 EduConnect. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">LinkedIn</a>
+                <a href="#">Instagram</a>
+                <a href="#">YouTube</a>
+            </div>
+        </div>
+    </footer>
 </div>
-
-<form method="post">
-    {% csrf_token %}
-    {{ form.role }}
-
-    {% if form.non_field_errors %}
-        {% for error in form.non_field_errors %}
-            <p style="color: red;">{{ error }}</p>
-        {% endfor %}
-    {% endif %}
-
-    <p>
-        <label for="{{ form.email.id_for_label }}">Email:</label>
-        {{ form.email }}
-        {% if form.email.errors %}
-            <span style="color: red;">{{ form.email.errors|join:", " }}</span>
-        {% endif %}
-    </p>
-
-    <p>
-        <label for="{{ form.password.id_for_label }}">Password:</label>
-        {{ form.password }}
-        {% if form.password.errors %}
-            <span style="color: red;">{{ form.password.errors|join:", " }}</span>
-        {% endif %}
-    </p>
-
-    <p>
-        <label for="{{ form.remember_me.id_for_label }}">Remember me:</label>
-        {{ form.remember_me }}
-    </p>
-
-    <button type="submit">Sign In</button>
-</form>
-
-<p>
-    <a href="{% url 'register' %}?role={{ selected_role }}">Sign up </a>
-</p>
 {% endblock %}

@@ -1,50 +1,113 @@
 {% extends "base.html" %}
 
 {% block title %}Teacher Dashboard{% endblock %}
+{% block body_class %}dashboard-body{% endblock %}
 
 {% block content %}
-<h2>Teacher Dashboard</h2>
+<div class="dashboard-shell">
+    <header class="dashboard-topbar">
+        <div class="profile-intro">
+            <div class="avatar-badge">
+                {% if request.user.profile_picture %}
+                    <img src="{{ request.user.profile_picture.url }}" alt="Profile">
+                {% else %}
+                    {{ request.user.full_name|default:request.user.email|slice:":2"|upper }}
+                {% endif %}
+            </div>
+            <div>
+                <h1>Welcome back, {{ request.user.full_name }}!</h1>
+                <p>Have a productive day teaching</p>
+            </div>
+        </div>
+        <div class="topbar-actions">
+            <a href="{% url 'teacher_profile_update' %}" class="action-button">Update Profile</a>
+            <a href="{% url 'logout' %}" class="action-button action-button-danger">Logout</a>
+        </div>
+    </header>
 
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    <div>
-        {% if request.user.profile_picture %}
-            <img src="{{ request.user.profile_picture.url }}" alt="Profile" width="80" style="border-radius: 50%;">
-        {% endif %}
-        <p>Welcome, {{ request.user.full_name }}</p>
-    </div>
+    <section class="panel-section">
+        <h2>Quick Panel</h2>
+        <div class="quick-grid">
+            <div class="quick-card static-card">
+                <span class="quick-icon theme-blue">QR</span>
+                <h3>Generate QR</h3>
+                <p>Create QR code for attendance</p>
+            </div>
+            <a href="{% url 'teacher_class' %}" class="quick-card">
+                <span class="quick-icon theme-gold">CL</span>
+                <h3>Your Class</h3>
+                <p>Manage schedule and students</p>
+            </a>
+            <div class="quick-card static-card">
+                <span class="quick-icon theme-violet">QY</span>
+                <h3>Queries</h3>
+                <p>Address students' doubts</p>
+            </div>
+            <div class="quick-card static-card">
+                <span class="quick-icon theme-sky">MS</span>
+                <h3>Messaging</h3>
+                <p>Chat with students and parents</p>
+            </div>
+            <div class="quick-card static-card">
+                <span class="quick-icon theme-teal">AT</span>
+                <h3>Attendance</h3>
+                <p>Check students' attendance record</p>
+            </div>
+            <div class="quick-card static-card">
+                <span class="quick-icon theme-coral">AN</span>
+                <h3>Announcements</h3>
+                <p>Post news and updates</p>
+            </div>
+        </div>
+    </section>
 
-    <div>
-        <span style="margin-right: 20px;">Notifications</span>
-        <a href="{% url 'teacher_profile_update' %}" style="margin-right: 15px;">Update Profile</a>
-        <a href="{% url 'logout' %}">Logout</a>
-    </div>
+    <section class="panel-section">
+        <div class="section-heading">
+            <h2>Attendance QR</h2>
+            <span class="helper-text">Select a subject to open the QR page</span>
+        </div>
+        <div class="teacher-subject-grid">
+            {% for sub in subjects %}
+                <article class="subject-card">
+                    <div>
+                        <h3>{{ sub.name }}</h3>
+                        <p>Year {{ sub.course_year|default:'N/A' }}</p>
+                    </div>
+                    <a href="{% url 'generate_qr' sub.id %}" target="_blank" class="secondary-button">Start Attendance</a>
+                </article>
+            {% empty %}
+                <article class="empty-state">
+                    <h3>No subjects assigned</h3>
+                    <p>Add subjects in the admin panel to enable QR attendance.</p>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="panel-section">
+        <h2>Academic Calendar</h2>
+        <div class="calendar-card">
+            <div class="calendar-date">Today</div>
+            <div class="calendar-list">
+                {% for classroom in today_classes %}
+                    <article class="calendar-item">
+                        <div>
+                            <h3>{{ classroom.name }}</h3>
+                            <p>{{ classroom.subject_name|default:'Scheduled class' }}</p>
+                            <small>
+                                {% if classroom.section %}Section {{ classroom.section }}{% else %}Classroom session{% endif %}
+                            </small>
+                        </div>
+                        <span class="class-tag">Class</span>
+                    </article>
+                {% empty %}
+                    <article class="empty-state muted">
+                        <h3>No classes assigned</h3>
+                        <p>Your academic calendar is empty right now.</p>
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
 </div>
-
-<hr>
-
-<h3>Quick Actions</h3>
-<ul>
-    <li><a href="#">Generate QR</a></li>
-    <li><a href="{% url 'teacher_class' %}">Your Class</a></li>
-    <li><a href="#">Queries</a></li>
-    <li><a href="#">Messaging</a></li>
-    <li><a href="#">Announcements</a></li>
-</ul>
-
-<hr>
-
-<h3>Academic Calendar</h3>
-{% if today_classes %}
-    <ul>
-        {% for classroom in today_classes %}
-            <li>
-                {{ classroom.name }}
-                {% if classroom.section %}- {{ classroom.section }}{% endif %}
-                {% if classroom.subject_name %}({{ classroom.subject_name }}){% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No classes assigned yet.</p>
-{% endif %}
 {% endblock %}

@@ -1,66 +1,111 @@
 {% extends "base.html" %}
 
 {% block title %}Student Dashboard{% endblock %}
+{% block body_class %}dashboard-body{% endblock %}
 
 {% block content %}
-<h2>Student Dashboard</h2>
-
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    <div>
-        {% if request.user.profile_picture %}
-            <img src="{{ request.user.profile_picture.url }}" alt="Profile" width="80" style="border-radius: 50%;">
-        {% endif %}
-        <p>Welcome, {{ request.user.full_name }}</p>
-    </div>
-
-    <div>
-        <span style="margin-right: 20px;">Notifications</span>
-        <a href="{% url 'student_profile_update' %}" style="margin-right: 15px;">Update Profile</a>
-        <a href="{% url 'logout' %}">Logout</a>
-    </div>
-</div>
-
-<hr>
-
-<h3>Quick Actions</h3>
-<ul>
-    <li><a href="{% url 'student_qr_attendance' %}">QR Attendance</a></li>
-    <li><a href="{% url 'student_performance' %}">Performance</a></li>
-    <li><a href="{% url 'student_queries' %}">Ask Question</a></li>
-    <li><a href="{% url 'student_messages' %}">Messaging</a></li>
-    <li><a href="{% url 'student_attendance' %}">Attendance</a></li>
-    <li><a href="{% url 'student_announcements' %}">Announcements</a></li>
-</ul>
-
-<hr>
-
-<h3>Your Courses</h3>
-{% if enrolled_courses %}
-    {% for course in enrolled_courses %}
-        <div style="border: 1px solid #ccc; padding: 12px; margin-bottom: 12px;">
-            <p><strong>Subject Code:</strong> {{ course.subject_name|default:"SUBJECT" }}</p>
-            <p><strong>Subject Name:</strong> {{ course.name }}</p>
-            <p><strong>Teacher Name:</strong> {{ course.teacher.full_name }}</p>
+<div class="dashboard-shell">
+    <header class="dashboard-topbar">
+        <div class="profile-intro">
+            <div class="avatar-badge">
+                {% if request.user.profile_picture %}
+                    <img src="{{ request.user.profile_picture.url }}" alt="Profile">
+                {% else %}
+                    {{ request.user.full_name|default:request.user.email|slice:":2"|upper }}
+                {% endif %}
+            </div>
+            <div>
+                <h1>Welcome back, {{ request.user.full_name }}!</h1>
+                <p>Have a productive day learning</p>
+            </div>
         </div>
-    {% endfor %}
-{% else %}
-    <p>You are not enrolled in any courses yet.</p>
-{% endif %}
+        <div class="topbar-actions">
+            <a href="{% url 'student_profile_update' %}" class="action-button">Update Profile</a>
+            <a href="{% url 'logout' %}" class="action-button action-button-danger">Logout</a>
+        </div>
+    </header>
 
-<hr>
+    <section class="panel-section">
+        <div class="section-heading">
+            <h2>Quick Panel</h2>
+            <span class="attendance-chip {% if is_shortage %}is-alert{% endif %}">Attendance {{ attendance_percentage|default:0 }}%</span>
+        </div>
+        <div class="quick-grid">
+            <a href="{% url 'student_qr_attendence' %}" class="quick-card">
+                <span class="quick-icon theme-blue">QR</span>
+                <h3>QR Attendance</h3>
+                <p>Scan code to mark attendance</p>
+            </a>
+            <a href="{% url 'student_performance' %}" class="quick-card">
+                <span class="quick-icon theme-gold">PF</span>
+                <h3>Performance</h3>
+                <p>View grades and progress</p>
+            </a>
+            <a href="{% url 'student_queries' %}" class="quick-card">
+                <span class="quick-icon theme-violet">?</span>
+                <h3>Ask Question</h3>
+                <p>Clear your doubts</p>
+            </a>
+            <a href="{% url 'student_messages' %}" class="quick-card">
+                <span class="quick-icon theme-sky">MS</span>
+                <h3>Messaging</h3>
+                <p>Chat with classmates and teachers</p>
+            </a>
+            <a href="{% url 'student_attendance' %}" class="quick-card">
+                <span class="quick-icon theme-teal">AT</span>
+                <h3>Attendance</h3>
+                <p>Check your attendance record</p>
+            </a>
+            <a href="{% url 'student_announcements' %}" class="quick-card">
+                <span class="quick-icon theme-coral">AN</span>
+                <h3>Announcements</h3>
+                <p>Read latest news and updates</p>
+            </a>
+        </div>
+    </section>
 
-<h3>Academic Calendar</h3>
-{% if today_schedule %}
-    <ul>
-        {% for item in today_schedule %}
-            <li>
-                {{ item.name }}
-                {% if item.section %}- {{ item.section }}{% endif %}
-                {% if item.subject_name %}({{ item.subject_name }}){% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No classes scheduled for today.</p>
-{% endif %}
+    <section class="panel-section">
+        <h2>Enrolled Courses</h2>
+        <div class="course-grid">
+            {% for course in enrolled_courses %}
+                <article class="course-card {% cycle 'course-blue' 'course-violet' 'course-green' 'course-orange' 'course-indigo' 'course-pink' %}">
+                    <strong>{{ course.subject_name|default:'COURSE' }}</strong>
+                    <h3>{{ course.name }}</h3>
+                    <p>{{ course.teacher.full_name }}</p>
+                </article>
+            {% empty %}
+                <article class="empty-state">
+                    <h3>No enrolled courses yet</h3>
+                    <p>Your classes will appear here when they are assigned.</p>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="panel-section">
+        <h2>Academic Calendar</h2>
+        <div class="calendar-card">
+            <div class="calendar-date">Today</div>
+            <div class="calendar-list">
+                {% for item in today_schedule %}
+                    <article class="calendar-item">
+                        <div>
+                            <h3>{{ item.name }}</h3>
+                            <p>{{ item.subject_name|default:'Scheduled class' }}</p>
+                            <small>
+                                {% if item.section %}Section {{ item.section }}{% else %}Course session{% endif %}
+                            </small>
+                        </div>
+                        <span class="class-tag">Class</span>
+                    </article>
+                {% empty %}
+                    <article class="empty-state muted">
+                        <h3>No classes scheduled</h3>
+                        <p>Your next class will show up here.</p>
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}

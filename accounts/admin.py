@@ -32,3 +32,13 @@ class CustomUserAdmin(UserAdmin):
 
 # Register your model with the custom admin class
 admin.site.register(User, CustomUserAdmin)
+# --- Karan's Work: Registering new models ---
+from .models import Subject, Attendance
+
+@admin.register(Subject)
+class SubjectAdmin(admin.ModelAdmin):
+    list_display = ('name', 'teacher', 'course_year')
+
+@admin.register(Attendance)
+class AttendanceAdmin(admin.ModelAdmin):
+    list_display = ('student', 'subject', 'date', 'time')
