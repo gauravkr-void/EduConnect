@@ -1,8 +1,37 @@
-<h2>Attendance for {{ subject.name }}</h2>
-<div id="qr-container">
-    <img src="{{ qr_url }}" alt="Attendance QR" style="width: 300px;">
+{% extends "base.html" %}
+
+{% block title %}QR Attendance | {{ subject.name }}{% endblock %}
+{% block body_class %}dashboard-body{% endblock %}
+
+{% block content %}
+<div class="qr-projection-shell">
+    <div class="qr-projection-topbar">
+        <a href="{% url 'teacher_dashboard' %}" class="action-button">Back to Dashboard</a>
+        <span class="attendance-chip">Subject Year {{ subject.course_year|default:"N/A" }}</span>
+    </div>
+
+    <section class="qr-projection-stage">
+        <span class="hero-kicker qr-kicker">Live Attendance Session</span>
+        <h1>{{ subject.name }}</h1>
+        <p>Students can scan this QR code to mark attendance for the current class.</p>
+
+        <div id="qr-container" class="qr-projection-frame">
+            <img src="{{ qr_url }}" alt="Attendance QR for {{ subject.name }}" class="qr-projection-image">
+        </div>
+
+        <div class="qr-projection-meta">
+            <div class="qr-meta-card">
+                <strong>Quick note</strong>
+                <p>Keep this screen visible while students complete attendance.</p>
+            </div>
+            <div class="qr-meta-card">
+                <strong>Auto refresh</strong>
+                <p>The QR refreshes automatically every 60 seconds.</p>
+            </div>
+        </div>
+    </section>
 </div>
-<p>Scan this QR to mark your attendance!</p>
+{% endblock %}
 
 <script>
     // Page ko har 2 minute mein refresh karne ke liye (Dynamic QR)
