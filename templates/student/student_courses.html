@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Courses{% endblock %}
+{% block content %}
+<div class="dashboard-page">
+    <div class="feature-header">
+        <div>
+            <h1 class="welcome-title">Courses</h1>
+            <p class="welcome-subtitle">Subjects and classes you are currently enrolled in.</p>
+        </div>
+        <a href="{% url 'student_dashboard' %}" class="secondary-link">Back to Dashboard</a>
+    </div>
+
+    {% if courses or fallback_classes %}
+        <div class="course-grid">
+            {% for course in courses %}
+                <div class="course-card {% cycle 'gradient-blue' 'gradient-purple' 'gradient-green' 'gradient-orange' 'gradient-sky' 'gradient-pink' %}">
+                    <p class="course-code">{{ course.subject.code }}</p>
+                    <p class="course-name">{{ course.subject.name }}</p>
+                    <p class="course-teacher">{{ course.teacher.full_name }}</p>
+                    {% if course.room or course.semester %}
+                        <p class="course-teacher">{{ course.semester }}{% if course.room %} • Room {{ course.room }}{% endif %}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            {% for membership in fallback_classes %}
+                <div class="course-card {% cycle 'gradient-blue' 'gradient-purple' 'gradient-green' 'gradient-orange' 'gradient-sky' 'gradient-pink' %}">
+                    <p class="course-code">{{ membership.classroom.subject_name|default:"Subject" }}</p>
+                    <p class="course-name">{{ membership.classroom.name }}</p>
+                    <p class="course-teacher">{{ membership.classroom.teacher.full_name }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-card">You are not enrolled in any courses yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

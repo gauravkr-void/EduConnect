@@ -1,7 +1,45 @@
 {% extends "base.html" %}
 {% block title %}Attendance{% endblock %}
 {% block content %}
-<h2>Attendance</h2>
-<p>Overall and classwise attendance percentage will appear here.</p>
-<p><a href="{% url 'student_dashboard' %}">Back to Dashboard</a></p>
+<div class="dashboard-page">
+    <div class="feature-header">
+        <div>
+            <h1 class="welcome-title">Attendance</h1>
+            <p class="welcome-subtitle">Track your class attendance records.</p>
+        </div>
+        <a href="{% url 'student_dashboard' %}" class="secondary-link">Back to Dashboard</a>
+    </div>
+
+    <div class="stat-grid">
+        <div class="stat-card">
+            <span class="stat-label">Overall</span>
+            <strong>{{ attendance_percentage }}%</strong>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Attended</span>
+            <strong>{{ attended_classes }}</strong>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Total Classes</span>
+            <strong>{{ total_classes }}</strong>
+        </div>
+    </div>
+
+    {% if records %}
+        <div class="data-list">
+            {% for record in records %}
+                <div class="data-row">
+                    <div>
+                        <h3>{{ record.classroom.name }}</h3>
+                        <p>{{ record.date }}{% if record.marked_by %} • Marked by {{ record.marked_by.full_name }}{% endif %}</p>
+                        {% if record.note %}<p>{{ record.note }}</p>{% endif %}
+                    </div>
+                    <span class="status-pill status-{{ record.status }}">{{ record.get_status_display }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-card">No attendance records have been added yet.</div>
+    {% endif %}
+</div>
 {% endblock %}

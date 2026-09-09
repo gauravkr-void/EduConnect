@@ -3,7 +3,95 @@
 {% block title %}Teacher Dashboard{% endblock %}
 
 {% block content %}
-<h2>Teacher Dashboard</h2>
-<p>Welcome, {{ request.user.full_name }}</p>
-<p><a href="{% url 'logout' %}">Logout</a></p>
+<div class="dashboard-page">
+    <div class="topbar">
+        <div class="topbar-left">
+            {% if request.user.profile_picture %}
+                <img src="{{ request.user.profile_picture.url }}" alt="Profile" class="avatar-img">
+            {% else %}
+                <div class="avatar-fallback">{{ request.user.full_name|default:request.user.email|slice:":1"|upper }}</div>
+            {% endif %}
+
+            <div>
+                <h1 class="welcome-title">Welcome back, {{ request.user.full_name }}!</h1>
+                <p class="welcome-subtitle">Have a productive day teaching</p>
+            </div>
+        </div>
+
+        <div class="topbar-right">
+            <button class="icon-btn" type="button" title="Notifications">🔔</button>
+
+            <div class="settings-menu">
+                <details>
+                    <summary class="settings-summary" title="Settings">⚙</summary>
+                    <div class="settings-dropdown">
+                        <a href="{% url 'teacher_profile_update' %}" class="settings-link">Update Profile</a>
+                        <a href="{% url 'logout' %}" class="settings-link">Logout</a>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Quick Panel</h2>
+    <div class="quick-grid">
+        <a href="#" class="quick-card">
+            <div class="quick-icon icon-blue">▣</div>
+            <h3>Generate QR</h3>
+            <p>Create QR code for attendance</p>
+        </a>
+
+        <a href="{% url 'teacher_class' %}" class="quick-card">
+            <div class="quick-icon icon-gold">🏆</div>
+            <h3>Your Class</h3>
+            <p>Manage schedule and students</p>
+        </a>
+
+        <a href="#" class="quick-card">
+            <div class="quick-icon icon-purple">?</div>
+            <h3>Queries</h3>
+            <p>Address students' doubts</p>
+        </a>
+
+        <a href="#" class="quick-card">
+            <div class="quick-icon icon-blue">💬</div>
+            <h3>Messaging</h3>
+            <p>Chat with students and parents</p>
+        </a>
+
+        <a href="#" class="quick-card">
+            <div class="quick-icon icon-green">🗓</div>
+            <h3>Attendance</h3>
+            <p>Check students' attendance record</p>
+        </a>
+
+        <a href="#" class="quick-card">
+            <div class="quick-icon icon-red">📣</div>
+            <h3>Announcements</h3>
+            <p>Post news and updates</p>
+        </a>
+    </div>
+
+    <h2 class="section-title">Academic Calendar</h2>
+    <div class="calendar-card">
+        <h3 class="calendar-date">March 31, 2026</h3>
+
+        {% if today_classes %}
+            <div class="calendar-list">
+                {% for classroom in today_classes %}
+                    <div class="calendar-item">
+                        <div>
+                            <h4>{{ classroom.name }}</h4>
+                            <p class="calendar-code">{{ classroom.subject_name|default:"Course Session" }}</p>
+                            <p class="calendar-meta">🕘 9:00 AM - 10:30 AM &nbsp; Room 301</p>
+                        </div>
+                        <span class="calendar-badge">Class</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-card">No classes assigned yet.</div>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

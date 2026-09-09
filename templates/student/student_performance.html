@@ -1,7 +1,44 @@
 {% extends "base.html" %}
 {% block title %}Performance{% endblock %}
 {% block content %}
-<h2>Performance</h2>
-<p>Semester grades and assignment grades will be shown here.</p>
-<p><a href="{% url 'student_dashboard' %}">Back to Dashboard</a></p>
+<div class="dashboard-page">
+    <div class="feature-header">
+        <div>
+            <h1 class="welcome-title">Performance</h1>
+            <p class="welcome-subtitle">Review scores, grades, and teacher feedback.</p>
+        </div>
+        <a href="{% url 'student_dashboard' %}" class="secondary-link">Back to Dashboard</a>
+    </div>
+
+    <div class="stat-grid">
+        <div class="stat-card">
+            <span class="stat-label">Average</span>
+            <strong>{{ average_percentage }}%</strong>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Records</span>
+            <strong>{{ records|length }}</strong>
+        </div>
+    </div>
+
+    {% if records %}
+        <div class="data-list">
+            {% for record in records %}
+                <div class="data-row align-start">
+                    <div>
+                        <h3>{{ record.title }}</h3>
+                        <p>{{ record.classroom.name }} • {{ record.get_assessment_type_display }} • {{ record.recorded_at }}</p>
+                        {% if record.feedback %}<p>{{ record.feedback }}</p>{% endif %}
+                    </div>
+                    <div class="score-block">
+                        <strong>{{ record.score }}/{{ record.max_score }}</strong>
+                        <span>{{ record.percentage }}%{% if record.grade %} • {{ record.grade }}{% endif %}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-card">No performance records have been added yet.</div>
+    {% endif %}
+</div>
 {% endblock %}

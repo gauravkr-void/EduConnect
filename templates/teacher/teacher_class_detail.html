@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}{{ classroom.name }} | Class Management{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="feature-header">
+        <div>
+            <h1 class="welcome-title">{{ classroom.name }}</h1>
+            <p class="welcome-subtitle">
+                {{ classroom.subject_name|default:"Subject not assigned" }}
+                {% if classroom.section %} • {{ classroom.section }}{% endif %}
+                {% if classroom.academic_year %} • {{ classroom.academic_year }}{% endif %}
+            </p>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'teacher_class_edit' classroom.id %}" class="secondary-link">Edit Class</a>
+            <a href="{% url 'teacher_class' %}" class="secondary-link">All Classes</a>
+        </div>
+    </div>
+
+    <div class="stat-grid">
+        <div class="stat-card">
+            <span class="stat-label">Students</span>
+            <strong>{{ memberships|length }}</strong>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Section</span>
+            <strong>{{ classroom.section|default:"-" }}</strong>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Year</span>
+            <strong>{{ classroom.academic_year|default:"-" }}</strong>
+        </div>
+    </div>
+
+    <div class="feature-layout">
+        <form method="post" class="feature-form">
+            {% csrf_token %}
+            <h2>Add Student</h2>
+
+            {% if form.non_field_errors %}
+                <ul class="error-list">
+                    {% for error in form.non_field_errors %}
+                        <li class="error-item">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% for field in form %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            {% endfor %}
+
+            {% if has_available_students %}
+                <button type="submit" class="primary-btn">Add Student</button>
+            {% else %}
+                <div class="empty-card compact-empty">No available students to add.</div>
+            {% endif %}
+        </form>
+
+        <div>
+            <h2 class="section-title compact-title">Enrolled Students</h2>
+
+            {% if memberships %}
+                <div class="student-list">
+                    {% for membership in memberships %}
+                        <article class="student-row">
+                            <div class="student-profile">
+                                {% if membership.student.profile_picture %}
+                                    <img src="{{ membership.student.profile_picture.url }}" alt="Student photo" class="avatar-img">
+                                {% else %}
+                                    <div class="avatar-fallback">{{ membership.student.full_name|default:membership.student.email|slice:":1"|upper }}</div>
+                                {% endif %}
+
+                                <div>
+                                    <h3>{{ membership.student.full_name }}</h3>
+                                    <p>{{ membership.student.email }}</p>
+                                    <p class="row-meta">
+                                        Roll: {{ membership.student.roll_number|default:"-" }}
+                                        • Year: {{ membership.student.course_year|default:"-" }}
+                                        • Section: {{ membership.student.section_batch|default:"-" }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <form method="post" action="{% url 'teacher_class_remove_student' classroom.id membership.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="danger-btn">Remove</button>
+                            </form>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-card">No students enrolled in this class yet.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

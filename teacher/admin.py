@@ -4,8 +4,9 @@ from .models import StudentClassMembership, TeacherClass
 
 @admin.register(TeacherClass)
 class TeacherClassAdmin(admin.ModelAdmin):
-    list_display = ("name", "section", "subject_name", "teacher")
-    search_fields = ("name", "section", "subject_name", "teacher__full_name", "teacher__email")
+    list_display = ("name", "section", "subject_name", "academic_year", "teacher")
+    list_filter = ("academic_year", "section", "teacher")
+    search_fields = ("name", "section", "subject_name", "academic_year", "teacher__full_name", "teacher__email")
 
 
 @admin.register(StudentClassMembership)

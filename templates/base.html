@@ -1,15 +1,19 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}EduConnect{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
 </head>
 <body>
     {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
+        <ul class="message-list">
+            {% for message in messages %}
+                <li class="message-item">{{ message }}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
 
     {% block content %}{% endblock %}

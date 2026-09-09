@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Class{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="feature-header">
+        <div>
+            <h1 class="welcome-title">Edit Class</h1>
+            <p class="welcome-subtitle">Update subject, section, and academic year details.</p>
+        </div>
+        <a href="{% url 'teacher_class_detail' classroom.id %}" class="secondary-link">Back to Class</a>
+    </div>
+
+    <form method="post" class="feature-form narrow-form">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <ul class="error-list">
+                {% for error in form.non_field_errors %}
+                    <li class="error-item">{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% for field in form %}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        {% endfor %}
+
+        <button type="submit" class="primary-btn">Save Changes</button>
+    </form>
+</div>
+{% endblock %}

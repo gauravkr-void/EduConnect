@@ -6,6 +6,7 @@ class TeacherClass(models.Model):
     name = models.CharField(max_length=100)
     section = models.CharField(max_length=50, blank=True, null=True)
     subject_name = models.CharField(max_length=100, blank=True, null=True)
+    academic_year = models.CharField(max_length=20, blank=True, null=True)
     teacher = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

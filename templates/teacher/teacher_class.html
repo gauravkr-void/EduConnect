@@ -1,45 +1,76 @@
 {% extends "base.html" %}
 
-{% block title %}Your Class{% endblock %}
+{% block title %}Class Management{% endblock %}
 
 {% block content %}
-<h2>Your Classes</h2>
+<div class="dashboard-page">
+    <div class="feature-header">
+        <div>
+            <h1 class="welcome-title">Class Management</h1>
+            <p class="welcome-subtitle">Create classes and organize students by subject, section, and year.</p>
+        </div>
+        <a href="{% url 'teacher_dashboard' %}" class="secondary-link">Back to Dashboard</a>
+    </div>
 
-{% if teacher_classes %}
-    {% for classroom in teacher_classes %}
-        <div style="margin-bottom: 30px;">
-            <h3>
-                {{ classroom.name }}
-                {% if classroom.section %}- {{ classroom.section }}{% endif %}
-            </h3>
+    <div class="feature-layout">
+        <form method="post" class="feature-form">
+            {% csrf_token %}
+            <h2>Create Class</h2>
 
-            {% if classroom.subject_name %}
-                <p>Subject: {{ classroom.subject_name }}</p>
+            {% if form.non_field_errors %}
+                <ul class="error-list">
+                    {% for error in form.non_field_errors %}
+                        <li class="error-item">{{ error }}</li>
+                    {% endfor %}
+                </ul>
             {% endif %}
 
-            {% if classroom.student_memberships.all %}
-                <div>
-                    {% for membership in classroom.student_memberships.all %}
-                        <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-                            {% if membership.student.profile_picture %}
-                                <img src="{{ membership.student.profile_picture.url }}" alt="Student Photo" width="70">
-                            {% else %}
-                                <p>No Photo</p>
-                            {% endif %}
-                            <p>Name: {{ membership.student.full_name }}</p>
-                            <p>Roll Number: {{ membership.student.roll_number }}</p>
-                            <p>Email: {{ membership.student.email }}</p>
-                        </div>
+            {% for field in form %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            {% endfor %}
+
+            <button type="submit" class="primary-btn">Create Class</button>
+        </form>
+
+        <div>
+            <h2 class="section-title compact-title">Your Classes</h2>
+
+            {% if teacher_classes %}
+                <div class="class-grid">
+                    {% for classroom in teacher_classes %}
+                        <article class="class-card">
+                            <div class="class-card-top">
+                                <div>
+                                    <h3>{{ classroom.name }}</h3>
+                                    <p>{{ classroom.subject_name|default:"Subject not assigned" }}</p>
+                                </div>
+                                <span class="status-pill">{{ classroom.student_memberships.count }} student{{ classroom.student_memberships.count|pluralize }}</span>
+                            </div>
+
+                            <div class="class-meta-grid">
+                                <div>
+                                    <span>Section</span>
+                                    <strong>{{ classroom.section|default:"Not set" }}</strong>
+                                </div>
+                                <div>
+                                    <span>Year</span>
+                                    <strong>{{ classroom.academic_year|default:"Not set" }}</strong>
+                                </div>
+                            </div>
+
+                            <div class="class-actions">
+                                <a href="{% url 'teacher_class_detail' classroom.id %}" class="secondary-link">Manage Students</a>
+                                <a href="{% url 'teacher_class_edit' classroom.id %}" class="link-blue">Edit</a>
+                            </div>
+                        </article>
                     {% endfor %}
                 </div>
             {% else %}
-                <p>No students assigned to this class yet.</p>
+                <div class="empty-card">No classes created yet. Create your first class to begin enrolling students.</div>
             {% endif %}
         </div>
-    {% endfor %}
-{% else %}
-    <p>No classes assigned to you yet.</p>
-{% endif %}
-
-<p><a href="{% url 'teacher_dashboard' %}">Back to Dashboard</a></p>
+    </div>
+</div>
 {% endblock %}

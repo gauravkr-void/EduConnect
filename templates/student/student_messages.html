@@ -1,7 +1,73 @@
 {% extends "base.html" %}
 {% block title %}Messaging{% endblock %}
 {% block content %}
-<h2>Messaging</h2>
-<p>Class group chat and individual mentor messages will appear here.</p>
-<p><a href="{% url 'student_dashboard' %}">Back to Dashboard</a></p>
+<div class="dashboard-page">
+    <div class="feature-header">
+        <div>
+            <h1 class="welcome-title">Messages</h1>
+            <p class="welcome-subtitle">Send and review messages connected to your classes.</p>
+        </div>
+        <a href="{% url 'student_dashboard' %}" class="secondary-link">Back to Dashboard</a>
+    </div>
+
+    <div class="feature-layout">
+        <form method="post" class="feature-form">
+            {% csrf_token %}
+            <h2>New Message</h2>
+
+            {% if form.non_field_errors %}
+                <ul class="error-list">
+                    {% for error in form.non_field_errors %}
+                        <li class="error-item">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <label for="{{ form.classroom.id_for_label }}">Class</label>
+            {{ form.classroom }}
+            {% for error in form.classroom.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+
+            <label for="{{ form.recipient.id_for_label }}">Teacher</label>
+            {{ form.recipient }}
+            {% for error in form.recipient.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+
+            <label for="{{ form.subject.id_for_label }}">Subject</label>
+            {{ form.subject }}
+            {% for error in form.subject.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+
+            <label for="{{ form.body.id_for_label }}">Message</label>
+            {{ form.body }}
+            {% for error in form.body.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+
+            <button type="submit" class="primary-btn">Send Message</button>
+        </form>
+
+        <div>
+            <h2 class="section-title compact-title">Conversation History</h2>
+            {% if student_messages %}
+                <div class="data-list">
+                    {% for message in student_messages %}
+                        <article class="data-row align-start">
+                            <div>
+                                <h3>{{ message.subject }}</h3>
+                                <p>{{ message.body }}</p>
+                                <p class="row-meta">
+                                    From {{ message.sender.full_name }}
+                                    {% if message.recipient %} to {{ message.recipient.full_name }}{% endif %}
+                                    {% if message.classroom %} • {{ message.classroom.name }}{% endif %}
+                                    • {{ message.created_at|date:"M d, Y H:i" }}
+                                </p>
+                            </div>
+                            {% if message.recipient == request.user and not message.is_read %}
+                                <span class="status-pill priority-important">Unread</span>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-card">No messages have been sent yet.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}
