@@ -5,15 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}EduConnect{% endblock %}</title>
+<<<<<<< HEAD
     <link rel="stylesheet" href="{% static 'css/app.css' %}">
+=======
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}">
+    {% block extra_head %}{% endblock %}
+>>>>>>> 237c3ec7b9c4ac0db7f364399a5e1ec6901a1d98
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     {% if messages %}
+<<<<<<< HEAD
         <ul class="message-list">
             {% for message in messages %}
                 <li class="message-item">{{ message }}</li>
             {% endfor %}
         </ul>
+=======
+        <div class="flash-stack">
+            {% for message in messages %}
+                <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+        </div>
+>>>>>>> 237c3ec7b9c4ac0db7f364399a5e1ec6901a1d98
     {% endif %}
 
     {% block content %}{% endblock %}

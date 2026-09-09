@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
 {% block title %}Student Dashboard{% endblock %}
+{% block body_class %}dashboard-body{% endblock %}
 
 {% block content %}
+<<<<<<< HEAD
 <div class="dashboard-page">
     <div class="topbar">
         <div class="topbar-left">
@@ -111,5 +113,110 @@
             <div class="empty-card">No classes scheduled for today.</div>
         {% endif %}
     </div>
+=======
+<div class="dashboard-shell">
+    <header class="dashboard-topbar">
+        <div class="profile-intro">
+            <div class="avatar-badge">
+                {% if request.user.profile_picture %}
+                    <img src="{{ request.user.profile_picture.url }}" alt="Profile">
+                {% else %}
+                    {{ request.user.full_name|default:request.user.email|slice:":2"|upper }}
+                {% endif %}
+            </div>
+            <div>
+                <h1>Welcome back, {{ request.user.full_name }}!</h1>
+                <p>Have a productive day learning</p>
+            </div>
+        </div>
+        <div class="topbar-actions">
+            <a href="{% url 'student_profile_update' %}" class="action-button">Update Profile</a>
+            <a href="{% url 'logout' %}" class="action-button action-button-danger">Logout</a>
+        </div>
+    </header>
+
+    <section class="panel-section">
+        <div class="section-heading">
+            <h2>Quick Panel</h2>
+            <span class="attendance-chip {% if is_shortage %}is-alert{% endif %}">Attendance {{ attendance_percentage|default:0 }}%</span>
+        </div>
+        <div class="quick-grid">
+            <a href="{% url 'student_qr_attendence' %}" class="quick-card">
+                <span class="quick-icon theme-blue">QR</span>
+                <h3>QR Attendance</h3>
+                <p>Scan code to mark attendance</p>
+            </a>
+            <a href="{% url 'student_performance' %}" class="quick-card">
+                <span class="quick-icon theme-gold">PF</span>
+                <h3>Performance</h3>
+                <p>View grades and progress</p>
+            </a>
+            <a href="{% url 'student_queries' %}" class="quick-card">
+                <span class="quick-icon theme-violet">?</span>
+                <h3>Ask Question</h3>
+                <p>Clear your doubts</p>
+            </a>
+            <a href="{% url 'student_messages' %}" class="quick-card">
+                <span class="quick-icon theme-sky">MS</span>
+                <h3>Messaging</h3>
+                <p>Chat with classmates and teachers</p>
+            </a>
+            <a href="{% url 'student_attendance' %}" class="quick-card">
+                <span class="quick-icon theme-teal">AT</span>
+                <h3>Attendance</h3>
+                <p>Check your attendance record</p>
+            </a>
+            <a href="{% url 'student_announcements' %}" class="quick-card">
+                <span class="quick-icon theme-coral">AN</span>
+                <h3>Announcements</h3>
+                <p>Read latest news and updates</p>
+            </a>
+        </div>
+    </section>
+
+    <section class="panel-section">
+        <h2>Enrolled Courses</h2>
+        <div class="course-grid">
+            {% for course in enrolled_courses %}
+                <article class="course-card {% cycle 'course-blue' 'course-violet' 'course-green' 'course-orange' 'course-indigo' 'course-pink' %}">
+                    <strong>{{ course.subject_name|default:'COURSE' }}</strong>
+                    <h3>{{ course.name }}</h3>
+                    <p>{{ course.teacher.full_name }}</p>
+                </article>
+            {% empty %}
+                <article class="empty-state">
+                    <h3>No enrolled courses yet</h3>
+                    <p>Your classes will appear here when they are assigned.</p>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="panel-section">
+        <h2>Academic Calendar</h2>
+        <div class="calendar-card">
+            <div class="calendar-date">Today</div>
+            <div class="calendar-list">
+                {% for item in today_schedule %}
+                    <article class="calendar-item">
+                        <div>
+                            <h3>{{ item.name }}</h3>
+                            <p>{{ item.subject_name|default:'Scheduled class' }}</p>
+                            <small>
+                                {% if item.section %}Section {{ item.section }}{% else %}Course session{% endif %}
+                            </small>
+                        </div>
+                        <span class="class-tag">Class</span>
+                    </article>
+                {% empty %}
+                    <article class="empty-state muted">
+                        <h3>No classes scheduled</h3>
+                        <p>Your next class will show up here.</p>
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+>>>>>>> 237c3ec7b9c4ac0db7f364399a5e1ec6901a1d98
 </div>
 {% endblock %}

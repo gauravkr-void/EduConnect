@@ -12,4 +12,6 @@ urlpatterns = [
         name="teacher_class_remove_student",
     ),
     path("profile/update/", views.teacher_profile_update, name="teacher_profile_update"),
+    path('generate-qr/<int:subject_id>/', views.generate_qr_view, name='generate_qr'),
 ]
+
